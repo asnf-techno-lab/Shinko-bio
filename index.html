@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Shinko Bio | ASNF Techno Lab</title>
+    <style>
+        /* ==========================================
+           SHINKO BIO - DIGITAL IDENTITY HUB
+           Company: ASNF Techno Lab
+           Engine: Shinko Engine 14 (Next Generation FPS Optimizer)
+           Architect: M. Nabil Irza Prawira
+           AI Co-Pilot: Gemini
+           ========================================== */
+        
+        :root {
+            /* SHINKO LIQUID GLASS ENGINE 4.0 */
+            --glass-blur-value: 150px;
+            --glass-blur: blur(var(--glass-blur-value)) saturate(400%);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.05) 100%);
+            --glass-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.05);
+            
+            --ios-radius: 32px; 
+            --btn-radius: 40px; 
+            --trans-curve: cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: all 0.5s var(--trans-curve);
+            
+            /* Theming */
+            --bg-base: #000000;
+            --text-main: #ffffff;
+            --text-sub: rgba(235, 235, 245, 0.65);
+            --accent: #0a84ff;
+            --accent-glow: rgba(10, 132, 255, 0.6);
+            --asnf-gold: #ffd60a;
+            --asnf-red: #ff453a;
+            --asnf-purple: #bf5af2;
+        }
+
+        /* DYNAMIC MESH PARALLAX BACKGROUND */
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            font-size: clamp(14px, 1.3vw, 16px); 
+            scrollbar-width: none; 
+        }
+        body::-webkit-scrollbar { display: none; } 
+
+        .mesh-bg {
+            position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; z-index: -1;
+            background-image: 
+                radial-gradient(at 10% 20%, rgba(10, 132, 255, 0.2) 0px, transparent 40%),
+                radial-gradient(at 80% 30%, rgba(191, 90, 242, 0.2) 0px, transparent 40%),
+                radial-gradient(at 90% 80%, rgba(10, 132, 255, 0.15) 0px, transparent 40%),
+                radial-gradient(at 20% 90%, rgba(255, 214, 10, 0.1) 0px, transparent 40%);
+            animation: meshFlow 30s ease-in-out infinite alternate;
+            transition: transform 0.5s cubic-bezier(0.1, 0.8, 0.2, 1);
+            will-change: transform, background-position;
+        }
+
+        @keyframes meshFlow {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        /* ================= LOADING SCREEN (SHINKO BOOT) ================= */
+        #loading-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000; z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 1.2s var(--trans-curve), visibility 1.2s;
+        }
+        
+        .asnf-logo-container { position: relative; width: 100px; height: 100px; margin-bottom: 25px; }
+        .manual-logo {
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--accent), var(--asnf-purple));
+            background-size: 200% 200%; border-radius: 30px;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 0 60px var(--accent-glow);
+            opacity: 0; transform: scale(0.3);
+            animation: logoReveal 1s var(--trans-curve) 0.5s forwards, gradientShift 3s ease infinite;
+        }
+        .manual-logo::after { content: 'SB'; font-size: 40px; font-weight: 900; color: #fff; letter-spacing: -2px;}
+        
+        @keyframes gradientShift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+
+        .loading-text-container { position: relative; height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 10px;}
+        
+        .text-bio { font-size: 36px; font-weight: 900; letter-spacing: 2px; color: #fff; animation: textPop 1.5s var(--trans-curve) forwards; opacity: 0; transform: translateY(20px);}
+        .text-asnf { font-size: 13px; font-weight: 700; color: var(--text-sub); letter-spacing: 5px; text-transform: uppercase; margin-top: 10px; opacity: 0; animation: textPop 1.5s var(--trans-curve) 0.5s forwards;}
+
+        @keyframes logoReveal { 0% { opacity: 0; transform: scale(0.3) translateY(40px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+        @keyframes textPop { 0% { opacity: 0; transform: translateY(20px) scale(0.95); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+
+        /* ================= SHINKO LIQUID GLASS UI ================= */
+        .app-layout { 
+            max-width: 1000px; /* Lebar lebih slim khusus untuk Bio/Portfolio */
+            margin: 0 auto; 
+            padding: clamp(20px, 5vw, 40px); 
+            padding-bottom: 140px; 
+            box-sizing: border-box; 
+        }
+
+        /* DOCK NAV */
+        .shinko-dock {
+            position: fixed; bottom: clamp(20px, 4vw, 35px); left: 50%; transform: translateX(-50%);
+            background: rgba(15, 15, 15, 0.6);
+            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            border-radius: 50px;
+            display: flex; gap: 8px; padding: 12px 25px; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.15);
+            z-index: 900; transition: width 0.4s var(--trans-curve);
+            will-change: transform, width;
+        }
+        .shinko-dock::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 50px; padding: 1px;
+            background: var(--glass-border);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
+        }
+
+        .dock-item {
+            width: 60px; height: 60px; border-radius: 22px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: var(--text-sub); cursor: pointer; position: relative;
+            transition: var(--transition);
+        }
+        .dock-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .dock-item.active { 
+            background: rgba(255,255,255,0.15); color: #fff; 
+            transform: scale(1.15) translateY(-12px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.1);
+        }
+        .dock-icon { font-size: 24px; margin-bottom: 2px; transition: var(--transition); }
+        .dock-item.active .dock-icon { transform: scale(1.1); filter: drop-shadow(0 0 15px rgba(255,255,255,0.4));}
+        .dock-text { font-size: 11px; font-weight: 800; opacity: 0; transform: translateY(15px); transition: var(--transition); position: absolute; bottom: -22px; color: #fff; letter-spacing: 0.5px;}
+        .dock-item.active .dock-text { opacity: 1; transform: translateY(0); }
+
+        /* TAB SYSTEM */
+        .tab-section { display: none; opacity: 0; transform: scale(0.97) translateY(30px); transition: var(--transition); }
+        .tab-section.active { display: block; opacity: 1; transform: scale(1) translateY(0); animation: smoothEntry 0.7s var(--trans-curve) forwards; }
+        
+        @keyframes smoothEntry { 0% { opacity: 0; transform: translateY(40px) scale(0.95); filter: blur(15px); } 100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }
+
+        /* HEADERS */
+        .hero-header { text-align: center; margin-bottom: 60px; margin-top: 40px; }
+        .hero-title { 
+            font-size: clamp(38px, 6vw, 65px); 
+            font-weight: 900; letter-spacing: -2px; margin: 0; 
+            background: linear-gradient(to right, #fff, rgba(255,255,255,0.7)); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+        }
+        .hero-title.mask {
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0idXJsKCNncmFkKSIvPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2JmNWFmMiIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzBhODRmZiIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjwvc3ZnPg==') 0 0/ 200% 200%;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: gradientShift 5s ease infinite;
+        }
+        .hero-subtitle { font-size: clamp(15px, 2vw, 18px); color: var(--text-sub); font-weight: 600; letter-spacing: 3px; text-transform: uppercase; margin-top: 15px; }
+
+        /* CARDS & UI COMPONENTS */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            border-radius: var(--ios-radius); padding: 35px; 
+            box-shadow: var(--glass-shadow); color: #fff; position: relative; overflow: hidden;
+            transition: transform 0.6s var(--trans-curve), box-shadow 0.6s var(--trans-curve);
+        }
+        .glass-card::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: var(--ios-radius); padding: 1px; background: var(--glass-border);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
+        }
+        .glass-card::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent);
+            transform: rotate(45deg) translateY(-100%); transition: 0s; pointer-events: none;
+        }
+        .glass-card:hover::before { transform: rotate(45deg) translateY(100%); transition: 1s cubic-bezier(0.4, 0, 0.2, 1); }
+        .glass-card:hover { transform: scale(1.02) translateY(-10px); box-shadow: 0 25px 60px rgba(0,0,0,0.7), inset 0 0 30px rgba(255,255,255,0.1); z-index: 10;}
+
+        /* BADGES */
+        .badge { 
+            padding: 8px 16px; border-radius: 12px; font-size: 12px; font-weight: 800; 
+            margin-bottom: 20px; display: inline-flex; letter-spacing: 1.5px; text-transform: uppercase;
+            border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+        }
+        @keyframes pulseGlow { 0% {box-shadow: 0 0 5px currentColor;} 50% {box-shadow: 0 0 20px currentColor;} 100% {box-shadow: 0 0 5px currentColor;} }
+        .b-blue { background: rgba(10, 132, 255, 0.15); color: var(--accent); }
+        .b-purple { background: rgba(191, 90, 242, 0.15); color: var(--asnf-purple); }
+        .b-gold { background: rgba(255, 214, 10, 0.15); color: var(--asnf-gold); }
+        .b-red { background: rgba(255, 69, 58, 0.15); color: var(--asnf-red); }
+
+        /* BUTTONS */
+        .btn-glass {
+            display: inline-flex; justify-content: center; align-items: center; text-decoration: none; box-sizing: border-box;
+            background: rgba(255,255,255,0.08); color: #fff; gap: 10px;
+            padding: 18px 35px; border-radius: var(--btn-radius); font-weight: 800; font-size: 15px; letter-spacing: 1px; 
+            transition: var(--transition); border: 1px solid rgba(255,255,255,0.15);
+            position: relative; overflow: hidden; transform: translateZ(0); cursor: pointer; width: 100%;
+        }
+        .btn-glass:hover { background: #fff; color: #000; transform: scale(1.03) translateY(-3px); box-shadow: 0 15px 35px rgba(255,255,255,0.3); }
+        .btn-action-primary { background: var(--accent); color: #fff; border: none; box-shadow: 0 8px 25px var(--accent-glow); }
+        .btn-action-primary:hover { background: #fff; color: var(--accent); box-shadow: 0 15px 40px var(--accent-glow);}
+        
+        .blue-tick { width: 22px; height: 22px; fill: #0a84ff; filter: drop-shadow(0 0 8px rgba(10,132,255,0.6)); display: inline-block; vertical-align: middle;}
+
+        /* MENU SPECIFIC STYLES */
+        .welcome-box { text-align: center; padding: 50px 30px; }
+        .welcome-box h2 { font-size: 32px; font-weight: 900; margin: 0 0 20px; letter-spacing: -1px; }
+        .welcome-box p { font-size: 17px; line-height: 1.8; color: var(--text-sub); margin-bottom: 40px; }
+        
+        .profile-header { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 40px; }
+        .avatar-container { position: relative; width: 180px; height: 180px; margin-bottom: 30px; } 
+        .dev-avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; box-shadow: 0 20px 60px rgba(0,0,0,0.8); position: relative; z-index: 2; border: 2px solid rgba(255,255,255,0.1);}
+        .avatar-halo { position: absolute; top: -15px; left: -15px; right: -15px; bottom: -15px; background: linear-gradient(45deg, var(--accent), var(--asnf-purple)); border-radius: 50%; z-index: 1; filter: blur(25px); opacity: 0.6; animation: breathingHalo 4s ease-in-out infinite alternate; }
+        @keyframes breathingHalo { 0% {transform: scale(1); opacity: 0.4;} 100% {transform: scale(1.1); opacity: 0.8;} }
+
+        .data-list { background: rgba(0,0,0,0.3); border-radius: 24px; padding: 5px; border: 1px solid rgba(255,255,255,0.05); }
+        .data-item { display: flex; flex-direction: column; padding: 20px 25px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .data-item:last-child { border-bottom: none; }
+        .data-label { font-size: 13px; color: var(--text-sub); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+        .data-value { font-size: 18px; color: #fff; font-weight: 600; line-height: 1.5; }
+
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 40px; }
+        .pricing-card { background: rgba(255,255,255,0.03); border-radius: 28px; padding: 35px; border: 1px solid rgba(255,255,255,0.1); position: relative; transition: var(--transition); }
+        .pricing-card:hover { background: rgba(255,255,255,0.08); transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        .price-tag { font-size: 32px; font-weight: 900; color: #fff; margin: 15px 0 20px; letter-spacing: -1px; }
+        .price-list { list-style: none; padding: 0; margin: 0 0 30px; color: var(--text-sub); font-size: 15px; line-height: 1.8; }
+        .price-list li { margin-bottom: 12px; display: flex; gap: 10px; }
+        .price-list li::before { content: '✅'; font-size: 14px; }
+
+        .project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        
+        .footer-note { text-align: center; margin-top: 60px; font-size: 13px; color: rgba(255,255,255,0.3); letter-spacing: 1px; font-weight: 600;}
+
+        /* Utility */
+        .text-gradient { background: linear-gradient(135deg, var(--accent), var(--asnf-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    </style>
+</head>
+<body>
+
+    <div class="mesh-bg" id="meshBg"></div>
+
+    <div id="loading-screen">
+        <div class="asnf-logo-container">
+            <div class="manual-logo"></div>
+        </div>
+        <div class="loading-text-container">
+            <div class="text-bio">Shinko Bio</div>
+            <div class="text-asnf">By ASNF Techno Lab</div>
+        </div>
+    </div>
+
+    <nav class="shinko-dock">
+        <div class="dock-item active" onclick="switchMenu('home', this)">
+            <div class="dock-icon">🏠</div>
+            <div class="dock-text">Home</div>
+        </div>
+        <div class="dock-item" onclick="switchMenu('profile', this)">
+            <div class="dock-icon">👤</div>
+            <div class="dock-text">Profile</div>
+        </div>
+        <div class="dock-item" onclick="switchMenu('services', this)">
+            <div class="dock-icon">💼</div>
+            <div class="dock-text">Services</div>
+        </div>
+        <div class="dock-item" onclick="switchMenu('projects', this)">
+            <div class="dock-icon">🚀</div>
+            <div class="dock-text">Projects</div>
+        </div>
+        <div class="dock-item" onclick="switchMenu('about', this)">
+            <div class="dock-icon">🏢</div>
+            <div class="dock-text">ASNF</div>
+        </div>
+    </nav>
+
+    <div class="app-layout">
+        
+        <div id="menu-home" class="tab-section active">
+            <header class="hero-header">
+                <h1 class="hero-title mask">Shinko Bio</h1>
+                <p class="hero-subtitle">Digital Identity Hub</p>
+            </header>
+
+            <div class="glass-card welcome-box">
+                <h2>Selamat Datang di Shinko Bio</h2>
+                <p>
+                    Platform ini dikembangkan oleh <strong>ASNF Techno Lab</strong> menggunakan Shinko Engine 14. 
+                    Sebuah ruang eksklusif berstandar Apple UI/UX untuk memamerkan data pribadi, portofolio, dan identitas digital Anda ke seluruh dunia tanpa batas.
+                </p>
+                
+                <div style="background: rgba(0,0,0,0.4); border-radius: 24px; padding: 30px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05); text-align: left;">
+                    <h3 style="margin-top: 0; color: #fff; font-size: 20px;">Ingin Pamerkan Bio Anda di Sini?</h3>
+                    <p style="font-size: 15px; color: var(--text-sub); line-height: 1.7;">
+                        Dapatkan link eksklusif <i>/Shinko-Bio-namaanda/</i>. Caranya sangat mudah:<br><br>
+                        1. Unduh Template TXT di bawah ini.<br>
+                        2. Isi data pribadi Anda selengkap mungkin.<br>
+                        3. DM Instagram Pemilik ASNF Techno Lab <strong>@n4bilirzap.zw</strong> <svg class="blue-tick" style="width:16px;height:16px;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> <i>(1.450 Follower, Akun Asli)</i>.
+                    </p>
+                    <a id="downloadTemplate" class="btn-glass btn-action-primary" download="Template_ShinkoBio.txt" style="margin-top: 15px;">
+                        ⬇️ UNDUH TEMPLATE BIO (.TXT)
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="menu-profile" class="tab-section">
+            <header class="hero-header">
+                <h1 class="hero-title mask" style="background-image: linear-gradient(to right, #fff, var(--asnf-purple));">Architect Data</h1>
+                <p class="hero-subtitle">Classified Personal Record</p>
+            </header>
+
+            <div class="glass-card">
+                <div class="profile-header">
+                    <div class="avatar-container">
+                        <div class="avatar-halo"></div>
+                        <img src="uniw.png" class="dev-avatar" alt="Profile" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'180\' height=\'180\'><rect width=\'180\' height=\'180\' fill=\'%23111\'/><text x=\'50%\' y=\'50%\' font-family=\'sans-serif\' font-size=\'24\' fill=\'%23fff\' text-anchor=\'middle\' dominant-baseline=\'middle\'>Nabil</text></svg>'">
+                    </div>
+                    <h2 style="font-size: 32px; font-weight: 900; margin: 0 0 10px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        Muhammad Nabil Irza Prawira
+                        <svg class="blue-tick" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                    </h2>
+                    <p style="font-size: 16px; color: var(--accent); font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Founder of ASNF Techno Lab</p>
+                </div>
+
+                <div class="data-list">
+                    <div class="data-item">
+                        <span class="data-label">Lahir & Usia</span>
+                        <span class="data-value">21 Maret 2009 (17 Tahun)</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">Garis Keturunan</span>
+                        <span class="data-value">Anak Tunggal dari ALM TNI Mayor</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">Domisili Induk</span>
+                        <span class="data-value">Banda Masen, Lhokseumawe, Aceh, Indonesia</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">Spesialisasi & Profesi</span>
+                        <span class="data-value" style="color: var(--text-sub);">
+                            <strong style="color:#fff;">Pembuat Web</strong> (High-End UI/UX) • <strong style="color:#fff;">Pembuat Root Module</strong> (Performance Optimizer) • <strong style="color:#fff;">Pengembang Besar Baru</strong>
+                        </span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">Social Network</span>
+                        <div style="display: flex; gap: 15px; margin-top: 8px; flex-wrap: wrap;">
+                            <a href="https://instagram.com/n4bilirzap.zw" target="_blank" class="badge b-purple" style="margin:0; text-decoration: none;">📸 IG: @n4bilirzap.zw <svg class="blue-tick" style="width:14px;height:14px; margin-left: 4px;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></a>
+                            <span class="badge b-blue" style="margin:0;">🎵 Tiktok: @n4bilirzap.zw</span>
+                            <span class="badge b-blue" style="margin:0;">✈️ Telegram: @n4bilirz</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="menu-services" class="tab-section">
+            <header class="hero-header">
+                <h1 class="hero-title mask" style="background-image: linear-gradient(to right, var(--asnf-gold), #fff);">Premium Services</h1>
+                <p class="hero-subtitle">Web Standar Apple, Tanpa Harga Apple.</p>
+            </header>
+
+            <div class="glass-card" style="margin-bottom: 40px; border-top: 4px solid var(--accent);">
+                <p style="font-size: 18px; line-height: 1.8; color: #fff; font-style: italic; margin-top: 0;">
+                    "Bosan dengan tampilan web yang itu-itu saja? Saya buatkan website satu halaman (Single Page) dengan standar UI/UX iOS/MacOS yang clean, snappy, dan mewah."
+                </p>
+                <div style="text-align: right; color: var(--text-sub); font-weight: 700;">— M. Nabil Irza Prawira</div>
+            </div>
+
+            <div class="glass-card">
+                <h3 style="font-size: 24px; margin-top: 0; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">💎 Kenapa Harus Jasa Nabil?</h3>
+                <ul class="price-list" style="margin-bottom: 0;">
+                    <li><strong>Apple-Like Design:</strong> Estetika premium dengan efek Glassmorphism, tipografi presisi, dan navigasi halus.</li>
+                    <li><strong>Firebase Integrated:</strong> Web fungsional, bisa simpan data secara real-time.</li>
+                    <li><strong>Login System:</strong> Keamanan terjamin dengan sistem login & daftar manual (E-mail & Password).</li>
+                    <li><strong>Ultra Lightweight:</strong> Kode efisien, total file di bawah 100kb, menjamin kecepatan loading maksimal.</li>
+                    <li><strong>Pengerjaan Ekspres:</strong> Semua paket dijamin selesai dalam 4 Hari Kerja.</li>
+                </ul>
+            </div>
+
+            <h2 style="text-align: center; margin: 60px 0 30px; font-size: 28px;">Daftar Harga & Paket</h2>
+            
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="badge b-blue">Paket Lite</div>
+                    <div class="price-tag">Rp60rb - Rp100rb</div>
+                    <ul class="price-list">
+                        <li>Landing Page Static</li>
+                        <li>Full Design Apple-like</li>
+                        <li>Responsif Mobile/PC</li>
+                        <li>Setup Hosting Netlify Gratis</li>
+                    </ul>
+                </div>
+
+                <div class="pricing-card" style="border-color: var(--accent); box-shadow: 0 10px 40px var(--accent-glow); transform: scale(1.05); z-index: 2;">
+                    <div class="badge" style="background: var(--accent); color: #fff;">Paket Pro (Rekomendasi)</div>
+                    <div class="price-tag">Rp150rb - Rp300rb</div>
+                    <ul class="price-list">
+                        <li>Semua Fitur Paket Lite</li>
+                        <li>Sistem Login & Daftar Manual</li>
+                        <li>Firebase Database Real-time</li>
+                        <li>Akses Data Aman & Private</li>
+                    </ul>
+                </div>
+
+                <div class="pricing-card">
+                    <div class="badge b-gold">Paket Premium</div>
+                    <div class="price-tag">Rp430.000+</div>
+                    <ul class="price-list">
+                        <li>Custom Dashboard UI</li>
+                        <li>Full System Integrated</li>
+                        <li>PWA (Bisa di-install di HP)</li>
+                        <li>Konsultasi UI/UX Eksklusif</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="glass-card" style="margin-top: 40px; background: rgba(0,0,0,0.6);">
+                <h3 style="margin-top: 0; color: #fff;">Metode Pembayaran & Kontak</h3>
+                <p style="color: var(--text-sub); line-height: 1.8;">
+                    <strong>GoPay / DANA / ShopeePay:</strong> <br>
+                    <span style="font-size: 24px; font-weight: 900; color: var(--accent); letter-spacing: 2px;">082160654949</span>
+                </p>
+                <p style="color: var(--text-sub); line-height: 1.8;">
+                    <strong>SociaBuzz (Dukungan & Donasi):</strong><br>
+                    <a href="https://sociabuzz.com/nabilirzap" target="_blank" style="color: var(--accent); font-weight: bold; text-decoration: none;">sociabuzz.com/nabilirzap</a>
+                </p>
+                <a href="https://instagram.com/n4bilirzap.zw" target="_blank" class="btn-glass btn-action-primary" style="margin-top: 20px;">PESAN SEKARANG VIA DM IG</a>
+            </div>
+        </div>
+
+        <div id="menu-projects" class="tab-section">
+            <header class="hero-header">
+                <h1 class="hero-title mask">Developed Matrix</h1>
+                <p class="hero-subtitle">Ecosystem & Web Creations</p>
+            </header>
+
+            <div class="project-grid">
+                
+                <div class="glass-card">
+                    <div class="badge b-red">A.I. Core</div>
+                    <h3 style="font-size: 24px; font-weight: 800; margin: 0 0 10px;">AnXin A.I. 11.5</h3>
+                    <p style="color: var(--text-sub); line-height: 1.6; margin-bottom: 25px; flex-grow: 1;">
+                        Platform kecerdasan buatan dengan loading animasi Liquid Glass putih dan navigasi khas iOS.
+                    </p>
+                    <a href="https://anxinai.tecnology.netlify.app" target="_blank" class="btn-glass">KUNJUNGI WEB</a>
+                </div>
+
+                <div class="glass-card">
+                    <div class="badge b-blue">UI Framework</div>
+                    <h3 style="font-size: 24px; font-weight: 800; margin: 0 0 10px;">ShinkoUI 31</h3>
+                    <p style="color: var(--text-sub); line-height: 1.6; margin-bottom: 25px; flex-grow: 1;">
+                        Sistem antarmuka Next Gen dengan Shinko Engine 14. Algoritma anti-frame drop dan fitur Beta Gateway.
+                    </p>
+                    <a href="https://asnf-techno-lab.github.io/ShinkoUI-31/" target="_blank" class="btn-glass">KUNJUNGI WEB</a>
+                </div>
+
+                <div class="glass-card">
+                    <div class="badge b-purple">Generator System</div>
+                    <h3 style="font-size: 24px; font-weight: 800; margin: 0 0 10px;">AI Name Vault 14</h3>
+                    <p style="color: var(--text-sub); line-height: 1.6; margin-bottom: 25px; flex-grow: 1;">
+                        Sistem generator canggih untuk karakter dan nama perusahaan. Dibangun dengan integrasi API dinamis.
+                    </p>
+                    <a href="https://ai-name-vault6.netlify.app" target="_blank" class="btn-glass">KUNJUNGI WEB</a>
+                </div>
+
+                <div class="glass-card" style="border-color: var(--accent); box-shadow: 0 0 30px rgba(10,132,255,0.2);">
+                    <div class="badge b-gold">Identity Hub</div>
+                    <h3 style="font-size: 24px; font-weight: 800; margin: 0 0 10px;">Shinko Bio</h3>
+                    <p style="color: var(--text-sub); line-height: 1.6; margin-bottom: 25px; flex-grow: 1;">
+                        Platform Bio & Portofolio premium berstandar Apple. Web yang sedang Anda buka saat ini.
+                    </p>
+                    <a href="https://asnf-techno-lab.github.io/Shinko-bio/" target="_blank" class="btn-glass btn-action-primary">KUNJUNGI WEB</a>
+                </div>
+
+            </div>
+
+            <div style="background: rgba(10, 132, 255, 0.1); border-radius: 20px; padding: 25px; margin-top: 40px; border: 1px solid rgba(10,132,255,0.3); text-align: center;">
+                <h4 style="color: #fff; margin: 0 0 10px; font-size: 18px;">💡 Informasi Link Kustomisasi Bio</h4>
+                <p style="color: var(--text-sub); font-size: 15px; line-height: 1.6; margin: 0;">
+                    Jika ada klien/user yang menggunakan jasa web Shinko Bio ini, struktur tautan akan dibuat unik (contoh: <code>/Shinko-Bio-namauser/</code>). Hal ini diatur oleh ASNF Engine agar database dan layout tidak bertabrakan dengan pengguna lain.
+                </p>
+            </div>
+        </div>
+
+        <div id="menu-about" class="tab-section">
+            <header class="hero-header">
+                <h1 class="hero-title mask" style="background-image: linear-gradient(to right, var(--asnf-purple), var(--asnf-red));">Corporate Data</h1>
+                <p class="hero-subtitle">Mengenal ASNF Techno Lab</p>
+            </header>
+
+            <div class="glass-card" style="margin-bottom: 30px;">
+                <h2 style="margin-top: 0; font-size: 28px; color: #fff;">ASNF Techno Lab</h2>
+                <p style="color: var(--text-sub); font-size: 16px; line-height: 1.8;">
+                    <strong>Advanced System & Nabil Forge (ASNF) Techno Lab</strong> adalah perusahaan induk riset dan pengembangan teknologi perangkat lunak yang berpusat di Aceh, Lhokseumawe. Didirikan dan dijalankan langsung oleh M. Nabil Irza Prawira.
+                </p>
+                <p style="color: var(--text-sub); font-size: 16px; line-height: 1.8;">
+                    Fokus utama kami adalah mendobrak batasan limitasi perangkat keras <i>(Hardware)</i> melalui pembuatan Root Module (seperti seri Magic Random Pro & AIOG) dan merancang arsitektur Web Development tingkat tinggi <i>(High-End)</i> berskala Apple UI/UX dengan harga yang dapat diakses oleh publik.
+                </p>
+            </div>
+
+            <div class="glass-card" style="border-left: 5px solid var(--accent);">
+                <h3 style="margin-top: 0; font-size: 22px; color: var(--accent);">AnXin Technology Project (Sub-Brand)</h3>
+                <p style="color: var(--text-sub); font-size: 16px; line-height: 1.8;">
+                    Sebagai sayap pengembangan inovasi kecerdasan buatan, <strong>AnXin Technology</strong> beroperasi sebagai Sub-Brand resmi di bawah naungan ASNF Techno Lab. Divisi ini berfokus pada integrasi model bahasa besar (seperti Gemini AI) ke dalam UI berbasis <i>Glassmorphism</i> dan aplikasi sistem <i>smart-logic</i>.
+                </p>
+                <ul class="price-list" style="margin-top: 20px;">
+                    <li><strong>Pusat Komando:</strong> Lhokseumawe, Aceh.</li>
+                    <li><strong>Visi:</strong> "Membawa masa depan kinerja OS dan web eksklusif ke genggaman setiap user."</li>
+                </ul>
+            </div>
+
+            <div class="footer-note">
+                &copy; 2026 ASNF Techno Lab. All Rights Reserved.<br>
+                Powered by Shinko Engine 14.
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ==========================================
+        // SHINKO ENGINE 14 - LOGIC & UTILS
+        // ==========================================
+
+        // 1. ASNF HAPTIC ENGINE (Vibrate API)
+        function triggerHaptic(duration = 40) {
+            if (navigator.vibrate) { navigator.vibrate(duration); }
+        }
+
+        document.querySelectorAll('.btn-glass, .dock-item').forEach(el => {
+            el.addEventListener('click', () => triggerHaptic(50));
+        });
+
+        // 2. GENERATE TEMPLATE FILE (DATA URI)
+        const templateText = `=== FORM PENDAFTARAN SHINKO BIO ===
+Dikembangkan oleh: ASNF Techno Lab
+
+Nama Lengkap : 
+Tanggal Lahir : 
+Asal/Domisili : 
+Pekerjaan/Keahlian : 
+Sosial Media (IG/Tiktok/dll) : 
+Deskripsi Singkat (Bio) : 
+Project/Portofolio (Jika ada) : 
+
+*Harap kirimkan form yang sudah diisi ini via DM Instagram ke @n4bilirzap.zw beserta foto profil Anda.`;
+
+        const downloadBtn = document.getElementById('downloadTemplate');
+        downloadBtn.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(templateText);
+
+        // 3. FULL CODE AUTOMATIC FIX BUG AND ERROR (Real-time Interceptor)
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.warn("[ASNF Shinko Engine 14] Auto-Fix Intercepted:", message);
+            return true; 
+        };
+
+        // 4. SMART TAB NAVIGATION SYSTEM (DOCK LOGIC)
+        function switchMenu(menuId, element) {
+            document.querySelectorAll('.tab-section').forEach(tab => {
+                tab.classList.remove('active');
+                setTimeout(() => { if(!tab.classList.contains('active')) tab.style.display = 'none'; }, 500); 
+            });
+            document.querySelectorAll('.dock-item').forEach(item => { item.classList.remove('active'); });
+
+            const targetTab = document.getElementById('menu-' + menuId);
+            targetTab.style.display = 'block';
+            void targetTab.offsetWidth; // Force Reflow
+            targetTab.classList.add('active');
+            
+            element.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 5. INTERACTIVE MESH PARALLAX (Mouse Move)
+        const meshBg = document.getElementById('meshBg');
+        window.addEventListener('mousemove', (e) => {
+            if(window.innerWidth > 800) { 
+                const x = (e.clientX / window.innerWidth - 0.5) * 20; 
+                const y = (e.clientY / window.innerHeight - 0.5) * 20;
+                meshBg.style.transform = `translate(${x}px, ${y}px) scale(1.05)`;
+            }
+        });
+        window.addEventListener('mouseleave', () => { meshBg.style.transform = ''; });
+
+        // 6. STARTUP LOGIC (SHINKO BOOT)
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loading-screen');
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.visibility = 'hidden';
+                    loader.style.display = 'none';
+                }, 1200); 
+            }, 4000); // 4 Detik total boot time
+        });
+
+    </script>
+</body>
+</html>
