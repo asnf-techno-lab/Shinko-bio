@@ -8,7 +8,7 @@
         /* ==========================================
            SHINKO BIO - DIGITAL IDENTITY HUB
            Company: ASNF Techno Lab
-           Engine: Shinko Engine 14 (Next Generation FPS Optimizer)
+           Engine: Shinko Engine 14 (Next Generation FPS Optimizer + GPU Accel)
            Architect: M. Nabil Irza Prawira
            AI Co-Pilot: Gemini
            ========================================== */
@@ -24,6 +24,7 @@
             --ios-radius: 32px; 
             --btn-radius: 40px; 
             --trans-curve: cubic-bezier(0.4, 0, 0.2, 1);
+            --spring-curve: cubic-bezier(0.34, 1.56, 0.64, 1); /* Kurva animasi memantul mulus */
             --transition: all 0.5s var(--trans-curve);
             
             /* Theming */
@@ -63,9 +64,9 @@
         }
 
         @keyframes meshFlow {
-            0% { transform: rotate(0deg) scale(1); }
-            50% { transform: rotate(180deg) scale(1.1); }
-            100% { transform: rotate(360deg) scale(1); }
+            0% { transform: rotate(0deg) scale(1) translate3d(0,0,0); }
+            50% { transform: rotate(180deg) scale(1.1) translate3d(0,0,0); }
+            100% { transform: rotate(360deg) scale(1) translate3d(0,0,0); }
         }
 
         /* ================= LOADING SCREEN (SHINKO BOOT) ================= */
@@ -74,6 +75,7 @@
             background: #000; z-index: 9999;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             transition: opacity 1.2s var(--trans-curve), visibility 1.2s;
+            will-change: opacity, visibility;
         }
         
         .asnf-logo-container { position: relative; width: 100px; height: 100px; margin-bottom: 25px; }
@@ -83,8 +85,8 @@
             background-size: 200% 200%; border-radius: 30px;
             display: flex; justify-content: center; align-items: center;
             box-shadow: 0 0 60px var(--accent-glow);
-            opacity: 0; transform: scale(0.3);
-            animation: logoReveal 1s var(--trans-curve) 0.5s forwards, gradientShift 3s ease infinite;
+            opacity: 0; transform: scale(0.3) translate3d(0,0,0);
+            animation: logoReveal 1s var(--spring-curve) 0.5s forwards, gradientShift 3s ease infinite;
         }
         .manual-logo::after { content: 'SB'; font-size: 40px; font-weight: 900; color: #fff; letter-spacing: -2px;}
         
@@ -92,31 +94,31 @@
 
         .loading-text-container { position: relative; height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 10px;}
         
-        .text-bio { font-size: 36px; font-weight: 900; letter-spacing: 2px; color: #fff; animation: textPop 1.5s var(--trans-curve) forwards; opacity: 0; transform: translateY(20px);}
+        .text-bio { font-size: 36px; font-weight: 900; letter-spacing: 2px; color: #fff; animation: textPop 1.5s var(--trans-curve) forwards; opacity: 0; transform: translateY(20px) translate3d(0,0,0);}
         .text-asnf { font-size: 13px; font-weight: 700; color: var(--text-sub); letter-spacing: 5px; text-transform: uppercase; margin-top: 10px; opacity: 0; animation: textPop 1.5s var(--trans-curve) 0.5s forwards;}
 
-        @keyframes logoReveal { 0% { opacity: 0; transform: scale(0.3) translateY(40px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
-        @keyframes textPop { 0% { opacity: 0; transform: translateY(20px) scale(0.95); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes logoReveal { 0% { opacity: 0; transform: scale(0.3) translateY(40px) translate3d(0,0,0); } 100% { opacity: 1; transform: scale(1) translateY(0) translate3d(0,0,0); } }
+        @keyframes textPop { 0% { opacity: 0; transform: translateY(20px) scale(0.95) translate3d(0,0,0); } 100% { opacity: 1; transform: translateY(0) scale(1) translate3d(0,0,0); } }
 
         /* ================= SHINKO LIQUID GLASS UI ================= */
         .app-layout { 
-            max-width: 1000px; /* Lebar lebih slim khusus untuk Bio/Portfolio */
+            max-width: 1000px; 
             margin: 0 auto; 
             padding: clamp(20px, 5vw, 40px); 
             padding-bottom: 140px; 
             box-sizing: border-box; 
         }
 
-        /* DOCK NAV */
+        /* DOCK NAV - UPGRADED DOCK ANIMATION */
         .shinko-dock {
-            position: fixed; bottom: clamp(20px, 4vw, 35px); left: 50%; transform: translateX(-50%);
+            position: fixed; bottom: clamp(20px, 4vw, 35px); left: 50%; transform: translateX(-50%) translate3d(0,0,0); /* Hardware Accel */
             background: rgba(15, 15, 15, 0.6);
             backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
             border-radius: 50px;
             display: flex; gap: 8px; padding: 12px 25px; 
             box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.15);
-            z-index: 900; transition: width 0.4s var(--trans-curve);
-            will-change: transform, width;
+            z-index: 900; transition: width 0.4s var(--spring-curve);
+            will-change: transform, width, padding;
         }
         .shinko-dock::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
@@ -130,24 +132,26 @@
             width: 60px; height: 60px; border-radius: 22px; 
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             color: var(--text-sub); cursor: pointer; position: relative;
-            transition: var(--transition);
+            transition: transform 0.5s var(--spring-curve), background 0.3s, box-shadow 0.4s;
+            will-change: transform;
         }
         .dock-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
         .dock-item.active { 
             background: rgba(255,255,255,0.15); color: #fff; 
-            transform: scale(1.15) translateY(-12px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.1);
+            /* Upgrade: Translate3D for super smooth 120hz rendering on mobile */
+            transform: scale(1.18) translate3d(0, -14px, 0);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 0 20px rgba(255,255,255,0.1);
         }
-        .dock-icon { font-size: 24px; margin-bottom: 2px; transition: var(--transition); }
-        .dock-item.active .dock-icon { transform: scale(1.1); filter: drop-shadow(0 0 15px rgba(255,255,255,0.4));}
-        .dock-text { font-size: 11px; font-weight: 800; opacity: 0; transform: translateY(15px); transition: var(--transition); position: absolute; bottom: -22px; color: #fff; letter-spacing: 0.5px;}
-        .dock-item.active .dock-text { opacity: 1; transform: translateY(0); }
+        .dock-icon { font-size: 24px; margin-bottom: 2px; transition: var(--transition); will-change: transform; }
+        .dock-item.active .dock-icon { transform: scale(1.1) translate3d(0,0,0); filter: drop-shadow(0 0 15px rgba(255,255,255,0.6));}
+        .dock-text { font-size: 11px; font-weight: 800; opacity: 0; transform: translateY(15px) translate3d(0,0,0); transition: var(--transition); position: absolute; bottom: -22px; color: #fff; letter-spacing: 0.5px;}
+        .dock-item.active .dock-text { opacity: 1; transform: translateY(0) translate3d(0,0,0); }
 
-        /* TAB SYSTEM */
-        .tab-section { display: none; opacity: 0; transform: scale(0.97) translateY(30px); transition: var(--transition); }
-        .tab-section.active { display: block; opacity: 1; transform: scale(1) translateY(0); animation: smoothEntry 0.7s var(--trans-curve) forwards; }
+        /* TAB SYSTEM - GPU ACCELERATED ENTRY */
+        .tab-section { display: none; opacity: 0; transform: scale(0.97) translateY(30px) translate3d(0,0,0); transition: var(--transition); will-change: opacity, transform, filter; }
+        .tab-section.active { display: block; opacity: 1; transform: scale(1) translateY(0) translate3d(0,0,0); animation: smoothEntry 0.7s var(--spring-curve) forwards; }
         
-        @keyframes smoothEntry { 0% { opacity: 0; transform: translateY(40px) scale(0.95); filter: blur(15px); } 100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }
+        @keyframes smoothEntry { 0% { opacity: 0; transform: translateY(40px) scale(0.95) translate3d(0,0,0); filter: blur(15px); } 100% { opacity: 1; transform: translateY(0) scale(1) translate3d(0,0,0); filter: blur(0); } }
 
         /* HEADERS */
         .hero-header { text-align: center; margin-bottom: 60px; margin-top: 40px; }
@@ -170,7 +174,8 @@
             backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
             border-radius: var(--ios-radius); padding: 35px; 
             box-shadow: var(--glass-shadow); color: #fff; position: relative; overflow: hidden;
-            transition: transform 0.6s var(--trans-curve), box-shadow 0.6s var(--trans-curve);
+            transition: transform 0.6s var(--spring-curve), box-shadow 0.6s var(--trans-curve);
+            will-change: transform; /* Hardware Accel */
         }
         .glass-card::after {
             content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
@@ -184,14 +189,16 @@
             transform: rotate(45deg) translateY(-100%); transition: 0s; pointer-events: none;
         }
         .glass-card:hover::before { transform: rotate(45deg) translateY(100%); transition: 1s cubic-bezier(0.4, 0, 0.2, 1); }
-        .glass-card:hover { transform: scale(1.02) translateY(-10px); box-shadow: 0 25px 60px rgba(0,0,0,0.7), inset 0 0 30px rgba(255,255,255,0.1); z-index: 10;}
+        .glass-card:hover { transform: scale(1.02) translateY(-10px) translate3d(0,0,0); box-shadow: 0 25px 60px rgba(0,0,0,0.7), inset 0 0 30px rgba(255,255,255,0.1); z-index: 10;}
 
         /* BADGES */
         .badge { 
             padding: 8px 16px; border-radius: 12px; font-size: 12px; font-weight: 800; 
             margin-bottom: 20px; display: inline-flex; letter-spacing: 1.5px; text-transform: uppercase;
             border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+            transition: var(--transition);
         }
+        .badge:hover { transform: scale(1.05) translate3d(0,0,0); }
         @keyframes pulseGlow { 0% {box-shadow: 0 0 5px currentColor;} 50% {box-shadow: 0 0 20px currentColor;} 100% {box-shadow: 0 0 5px currentColor;} }
         .b-blue { background: rgba(10, 132, 255, 0.15); color: var(--accent); }
         .b-purple { background: rgba(191, 90, 242, 0.15); color: var(--asnf-purple); }
@@ -203,10 +210,11 @@
             display: inline-flex; justify-content: center; align-items: center; text-decoration: none; box-sizing: border-box;
             background: rgba(255,255,255,0.08); color: #fff; gap: 10px;
             padding: 18px 35px; border-radius: var(--btn-radius); font-weight: 800; font-size: 15px; letter-spacing: 1px; 
-            transition: var(--transition); border: 1px solid rgba(255,255,255,0.15);
+            transition: transform 0.4s var(--spring-curve), background 0.4s, box-shadow 0.4s; border: 1px solid rgba(255,255,255,0.15);
             position: relative; overflow: hidden; transform: translateZ(0); cursor: pointer; width: 100%;
+            will-change: transform;
         }
-        .btn-glass:hover { background: #fff; color: #000; transform: scale(1.03) translateY(-3px); box-shadow: 0 15px 35px rgba(255,255,255,0.3); }
+        .btn-glass:hover { background: #fff; color: #000; transform: scale(1.03) translateY(-3px) translate3d(0,0,0); box-shadow: 0 15px 35px rgba(255,255,255,0.3); }
         .btn-action-primary { background: var(--accent); color: #fff; border: none; box-shadow: 0 8px 25px var(--accent-glow); }
         .btn-action-primary:hover { background: #fff; color: var(--accent); box-shadow: 0 15px 40px var(--accent-glow);}
         
@@ -230,8 +238,8 @@
         .data-value { font-size: 18px; color: #fff; font-weight: 600; line-height: 1.5; }
 
         .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 40px; }
-        .pricing-card { background: rgba(255,255,255,0.03); border-radius: 28px; padding: 35px; border: 1px solid rgba(255,255,255,0.1); position: relative; transition: var(--transition); }
-        .pricing-card:hover { background: rgba(255,255,255,0.08); transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        .pricing-card { background: rgba(255,255,255,0.03); border-radius: 28px; padding: 35px; border: 1px solid rgba(255,255,255,0.1); position: relative; transition: var(--transition); will-change: transform;}
+        .pricing-card:hover { background: rgba(255,255,255,0.08); transform: translateY(-5px) translate3d(0,0,0); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
         .price-tag { font-size: 32px; font-weight: 900; color: #fff; margin: 15px 0 20px; letter-spacing: -1px; }
         .price-list { list-style: none; padding: 0; margin: 0 0 30px; color: var(--text-sub); font-size: 15px; line-height: 1.8; }
         .price-list li { margin-bottom: 12px; display: flex; gap: 10px; }
@@ -294,19 +302,20 @@
                 <h2>Selamat Datang di Shinko Bio</h2>
                 <p>
                     Platform ini dikembangkan oleh <strong>ASNF Techno Lab</strong> menggunakan Shinko Engine 14. 
-                    Sebuah ruang eksklusif berstandar Apple UI/UX untuk memamerkan data pribadi, portofolio, dan identitas digital Anda ke seluruh dunia tanpa batas.
+                    <strong>Shinko Bio 100% Gratis tanpa biaya!</strong> Dikhususkan untuk memasang, memperkenalkan, dan memamerkan data personal atau Toko Anda ke orang-orang melalui link Bio Instagram, TikTok, atau platform lainnya dengan standar Apple UI/UX.
                 </p>
                 
                 <div style="background: rgba(0,0,0,0.4); border-radius: 24px; padding: 30px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05); text-align: left;">
                     <h3 style="margin-top: 0; color: #fff; font-size: 20px;">Ingin Pamerkan Bio Anda di Sini?</h3>
                     <p style="font-size: 15px; color: var(--text-sub); line-height: 1.7;">
-                        Dapatkan link eksklusif <i>/Shinko-Bio-namaanda/</i>. Caranya sangat mudah:<br><br>
-                        1. Unduh Template TXT di bawah ini.<br>
-                        2. Isi data pribadi Anda selengkap mungkin.<br>
-                        3. DM Instagram Pemilik ASNF Techno Lab <strong>@n4bilirzap.zw</strong> <svg class="blue-tick" style="width:16px;height:16px;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> <i>(1.450 Follower, Akun Asli)</i>.
+                        Jika kalian ingin mengisi dan memamerkan data pribadi/toko kalian juga di ekosistem ini, caranya sangat mudah:<br><br>
+                        1. Unduh Template TXT V2 di bawah ini.<br>
+                        2. Isi data pribadi yang ingin ditampilkan selengkap mungkin.<br>
+                        3. DM Instagram Pemilik ASNF Techno Lab <strong>@n4bilirzap.zw</strong> <svg class="blue-tick" style="width:16px;height:16px;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> <br>
+                        <i>(Akun Asli: 1.450 Follower)</i> kirimkan form tersebut beserta foto/aset.
                     </p>
-                    <a id="downloadTemplate" class="btn-glass btn-action-primary" download="Template_ShinkoBio.txt" style="margin-top: 15px;">
-                        ⬇️ UNDUH TEMPLATE BIO (.TXT)
+                    <a id="downloadTemplate" class="btn-glass btn-action-primary" download="Template_ShinkoBio_V2.txt" style="margin-top: 15px;">
+                        ⬇️ UNDUH TEMPLATE BIO V2 (.TXT)
                     </a>
                 </div>
             </div>
@@ -347,15 +356,15 @@
                     <div class="data-item">
                         <span class="data-label">Spesialisasi & Profesi</span>
                         <span class="data-value" style="color: var(--text-sub);">
-                            <strong style="color:#fff;">Pembuat Web</strong> (High-End UI/UX) • <strong style="color:#fff;">Pembuat Root Module</strong> (Performance Optimizer) • <strong style="color:#fff;">Pengembang Besar Baru</strong>
+                            <strong style="color:#fff;">Pelajar SMK</strong> • <strong style="color:#fff;">Pembuat Web</strong> (High-End UI/UX) • <strong style="color:#fff;">Pembuat Root Module</strong> (Performance Optimizer) • <strong style="color:#fff;">Pengembang Besar Baru</strong>
                         </span>
                     </div>
                     <div class="data-item">
                         <span class="data-label">Social Network</span>
                         <div style="display: flex; gap: 15px; margin-top: 8px; flex-wrap: wrap;">
                             <a href="https://instagram.com/n4bilirzap.zw" target="_blank" class="badge b-purple" style="margin:0; text-decoration: none;">📸 IG: @n4bilirzap.zw <svg class="blue-tick" style="width:14px;height:14px; margin-left: 4px;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></a>
-                            <span class="badge b-blue" style="margin:0;">🎵 Tiktok: @n4bilirzap.zw</span>
-                            <span class="badge b-blue" style="margin:0;">✈️ Telegram: @n4bilirz</span>
+                            <a href="https://tiktok.com/@n4bilirzap.zw" target="_blank" class="badge b-blue" style="margin:0; text-decoration: none;">🎵 Tiktok: @n4bilirzap.zw</a>
+                            <a href="https://t.me/n4bilirz" target="_blank" class="badge b-blue" style="margin:0; text-decoration: none;">✈️ Telegram: @n4bilirz</a>
                         </div>
                     </div>
                 </div>
@@ -500,27 +509,39 @@
             <div class="glass-card" style="margin-bottom: 30px;">
                 <h2 style="margin-top: 0; font-size: 28px; color: #fff;">ASNF Techno Lab</h2>
                 <p style="color: var(--text-sub); font-size: 16px; line-height: 1.8;">
-                    <strong>Advanced System & Nabil Forge (ASNF) Techno Lab</strong> adalah perusahaan induk riset dan pengembangan teknologi perangkat lunak yang berpusat di Aceh, Lhokseumawe. Didirikan dan dijalankan langsung oleh M. Nabil Irza Prawira.
+                    <strong>Advanced System & Nabil Forge (ASNF) Techno Lab</strong> adalah perusahaan induk riset dan pengembangan teknologi perangkat lunak yang didirikan dan dijalankan langsung oleh M. Nabil Irza Prawira. Berpusat di Lhokseumawe, Aceh, fasilitas ini menjadi titik nol (Ground Zero) dari seluruh algoritma, struktur Web/UI kelas atas, dan Root Module yang dipublikasikan secara global.
                 </p>
                 <p style="color: var(--text-sub); font-size: 16px; line-height: 1.8;">
-                    Fokus utama kami adalah mendobrak batasan limitasi perangkat keras <i>(Hardware)</i> melalui pembuatan Root Module (seperti seri Magic Random Pro & AIOG) dan merancang arsitektur Web Development tingkat tinggi <i>(High-End)</i> berskala Apple UI/UX dengan harga yang dapat diakses oleh publik.
+                    Fokus utama kami adalah mendobrak batasan limitasi perangkat keras <i>(Hardware)</i> dan merancang arsitektur Web Development tingkat tinggi <i>(High-End)</i> berskala Apple UI/UX namun tetap terjangkau.
                 </p>
             </div>
 
-            <div class="glass-card" style="border-left: 5px solid var(--accent);">
+            <div class="glass-card" style="border-left: 5px solid var(--accent); margin-bottom: 30px;">
                 <h3 style="margin-top: 0; font-size: 22px; color: var(--accent);">AnXin Technology Project (Sub-Brand)</h3>
                 <p style="color: var(--text-sub); font-size: 16px; line-height: 1.8;">
-                    Sebagai sayap pengembangan inovasi kecerdasan buatan, <strong>AnXin Technology</strong> beroperasi sebagai Sub-Brand resmi di bawah naungan ASNF Techno Lab. Divisi ini berfokus pada integrasi model bahasa besar (seperti Gemini AI) ke dalam UI berbasis <i>Glassmorphism</i> dan aplikasi sistem <i>smart-logic</i>.
+                    Sebagai sayap pengembangan inovasi kecerdasan buatan, <strong>AnXin Technology</strong> beroperasi sebagai Sub-Brand resmi di bawah naungan ASNF Techno Lab. Divisi ini berfokus secara eksklusif pada integrasi sistem kepintaran buatan (*AI Models*), sistem generator dinamis, dan eksperimen otomasi UI.
                 </p>
-                <ul class="price-list" style="margin-top: 20px;">
-                    <li><strong>Pusat Komando:</strong> Lhokseumawe, Aceh.</li>
-                    <li><strong>Visi:</strong> "Membawa masa depan kinerja OS dan web eksklusif ke genggaman setiap user."</li>
-                </ul>
+            </div>
+
+            <div class="glass-card">
+                <h3 style="margin-top: 0; font-size: 22px; color: #fff; margin-bottom: 20px;">Produk Ekosistem Kami</h3>
+                <p style="color: var(--text-sub); font-size: 15px; margin-bottom: 20px;">
+                    Semua rancangan mahakarya di bawah ini dikelola secara penuh oleh Perusahan Induk ASNF Techno Lab dan sub-brand AnXin Technology Project.
+                </p>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                    <span class="badge" style="margin:0; background:rgba(255,255,255,0.1); color:#fff; border-color:rgba(255,255,255,0.2);">ShinkoUI 31</span>
+                    <span class="badge" style="margin:0; background:rgba(255,255,255,0.1); color:#fff; border-color:rgba(255,255,255,0.2);">Shinko Bio</span>
+                    <span class="badge b-red" style="margin:0;">AnXin A.I V12</span>
+                    <span class="badge b-purple" style="margin:0;">AI Name Vault</span>
+                    <span class="badge b-purple" style="margin:0;">The Name Vault</span>
+                    <span class="badge b-blue" style="margin:0;">AIOG Engine</span>
+                    <span class="badge b-gold" style="margin:0;">Magic Random Pro (MRP)</span>
+                </div>
             </div>
 
             <div class="footer-note">
-                &copy; 2026 ASNF Techno Lab. All Rights Reserved.<br>
-                Powered by Shinko Engine 14.
+                &copy; 2026 ASNF Techno Lab & AnXin Technology.<br>
+                All Rights Reserved. Powered by Shinko Engine 14.
             </div>
         </div>
 
@@ -528,7 +549,7 @@
 
     <script>
         // ==========================================
-        // SHINKO ENGINE 14 - LOGIC & UTILS
+        // SHINKO ENGINE 14 - LOGIC & UTILS (GPU ACCELERATED)
         // ==========================================
 
         // 1. ASNF HAPTIC ENGINE (Vibrate API)
@@ -540,19 +561,25 @@
             el.addEventListener('click', () => triggerHaptic(50));
         });
 
-        // 2. GENERATE TEMPLATE FILE (DATA URI)
-        const templateText = `=== FORM PENDAFTARAN SHINKO BIO ===
+        // 2. GENERATE TEMPLATE FILE V2 (DATA URI)
+        const templateText = `=== FORM PENDAFTARAN SHINKO BIO V2 ===
 Dikembangkan oleh: ASNF Techno Lab
 
-Nama Lengkap : 
-Tanggal Lahir : 
+Halo Nabil! Saya tertarik untuk memamerkan profil/toko saya menggunakan platform eksklusif Shinko Bio (Gratis). 
+Berikut data lengkap saya:
+
+Nama Lengkap/Toko : 
+Tanggal Lahir/Berdiri : 
 Asal/Domisili : 
-Pekerjaan/Keahlian : 
+Pekerjaan/Fokus Utama : 
 Sosial Media (IG/Tiktok/dll) : 
 Deskripsi Singkat (Bio) : 
-Project/Portofolio (Jika ada) : 
+Project/Portofolio/Produk (Jika ada) : 
 
-*Harap kirimkan form yang sudah diisi ini via DM Instagram ke @n4bilirzap.zw beserta foto profil Anda.`;
+*Pesan Tambahan: [Isi jika ada request khusus untuk warna/tema]
+
+*Harap kirimkan form yang sudah diisi ini via DM Instagram ke @n4bilirzap.zw beserta foto profil/logo Anda.
+Terima kasih!`;
 
         const downloadBtn = document.getElementById('downloadTemplate');
         downloadBtn.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(templateText);
@@ -580,16 +607,30 @@ Project/Portofolio (Jika ada) :
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 5. INTERACTIVE MESH PARALLAX (Mouse Move)
+        // 5. INTERACTIVE MESH PARALLAX (Mouse Move) - HW Accel Enabled
         const meshBg = document.getElementById('meshBg');
-        window.addEventListener('mousemove', (e) => {
-            if(window.innerWidth > 800) { 
-                const x = (e.clientX / window.innerWidth - 0.5) * 20; 
-                const y = (e.clientY / window.innerHeight - 0.5) * 20;
-                meshBg.style.transform = `translate(${x}px, ${y}px) scale(1.05)`;
+        let requestRef;
+        let mouseX = 0, mouseY = 0;
+
+        function updateParallax() {
+            if(window.innerWidth > 800) {
+                meshBg.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) scale(1.05)`;
             }
+            requestRef = requestAnimationFrame(updateParallax);
+        }
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth - 0.5) * 20; 
+            mouseY = (e.clientY / window.innerHeight - 0.5) * 20;
         });
-        window.addEventListener('mouseleave', () => { meshBg.style.transform = ''; });
+
+        window.addEventListener('mouseleave', () => { 
+            mouseX = 0; mouseY = 0;
+            meshBg.style.transform = `translate3d(0,0,0) scale(1)`; 
+        });
+
+        // Start Parallax Loop
+        requestRef = requestAnimationFrame(updateParallax);
 
         // 6. STARTUP LOGIC (SHINKO BOOT)
         window.addEventListener('load', () => {
